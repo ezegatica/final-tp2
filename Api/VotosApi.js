@@ -1,27 +1,53 @@
-import Factory from "../DAOs/Factory.js";
-import { MODE } from "../config/config.js";
-class xApi {
+import VotosMemoryDao from "../DAOs/votosMemoryDao.js";
+import { candidatosValidos, errorCandidatoInvalido, errorZonaInvalida, zonasValidas } from "../Models/Votos.js";
+class VotosApi {
   constructor() {
-    this.factory = Factory.factory(MODE);
+    this.repository = new VotosMemoryDao();
   }
-  create = async (data) => {
+  votar = async (data) => {
     try {
-      // vallidar la palabra
-      const info = await this.factory.xDao.createDao(data);
-      return info;
+      // Validar si la zona existe
+      const zonaEsInvalida = !zonasValidas.includes(data.zona);
+      // Validar si el candidato existe
+      const candidatoEsInvalido = !candidatosValidos.includes(data.candidato);
+
+      const errors = [];
+      if (zonaEsInvalida) {
+        errors.push(errorZonaInvalida)
+      }
+      if (candidatoEsInvalido) {
+        errors.push(errorCandidatoInvalido)
+      }
+      if (errors.length > 0) {
+        throw new Error(errors.join(', '))
+      }
+
+      await this.repository.votar(data);
     } catch (error) {
-      return error;
+      throw error;
     }
   };
-  getAll = async () => {
+  getAllVotos = async () => {
     try {
-      // vallidar la palabra
-      const info= await this.factory.xDao.getAllDao();
+      const info = await this.repository.getAllVotos();
       return info;
     } catch (error) {
-      return error;
+      throw error;
     }
   };
+  getVotosByZona = async (data) => {
+    try {
+      const zonaEsInvalida = !zonasValidas.includes(data.zona);
+      if (zonaEsInvalida) {
+        throw new Error(errorZonaInvalida)
+      }
+
+      const info = await this.repository.getVotosByZona(data);
+      return info;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
-export default xApi;
+export default VotosApi;

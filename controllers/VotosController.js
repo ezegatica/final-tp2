@@ -1,29 +1,40 @@
-import XApi from "../Api/XApi.js";
+import VotosApi from "../Api/VotosApi.js";
 
-class XController {
+class VotosController {
   constructor() {
-    this.xapi= new XApi()
+    this.api = new VotosApi()
   }
 
-  create = async (req, res) => {
+  votar = async (req, res) => {
     try {
-      const { name} = req.body;
-      if (!name) throw new Error("Campos vacios");
-      const info= await this.xapi.create({name});
-      res.status(200).send(info);
+      const { candidato, zona } = req.body;
+      if (!candidato || !zona) throw new Error("Campos requeridos (candidato o zona) vacíos");
+      await this.api.votar({ candidato, zona });
+      res.status(200).send({ message: "voto cargado" });
     } catch (error) {
-      res.status(422).send({ message: error.message });
+      res.status(400).send({ message: error.message });
     }
   };
-  getAll = async (req, res) => {
+  getAllVotos = async (req, res) => {
     try {
-      const info = await this.xapi.getAll();
+      const info = await this.api.getAllVotos();
       res.status(200).send(info);
     } catch (error) {
-      res.status(422).send({ message: error.message });
+      res.status(400).send({ message: error.message });
     }
   };
+
+  getVotosByZona = async (req, res) => {
+    try {
+      const { zona } = req.params;
+      if (!zona) throw new Error("Campos requeridos (zona) vacíos");
+      const info = await this.api.getVotosByZona({ zona });
+      res.status(200).send(info);
+    } catch (error) {
+      res.status(400).send({ message: error.message });
+    }
+  }
 
 }
 
-export default XController;
+export default VotosController;

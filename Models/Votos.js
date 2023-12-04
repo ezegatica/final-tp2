@@ -1,19 +1,20 @@
-import { DataTypes, Model } from "sequelize";
-import connection from "../connection/connection.js";
+// Validaciones de dominio
 
-class XModel extends Model {}
+/// Validacion de datos validos. Tenemos un array de zonas y candidatos, si nos pasan un dato fuera de este array tiramos error en la API.
+export const zonasValidas = [
+    "zona1",
+    "zona2",
+    "zona3",
+    "zona4"
+]
 
-XModel.init(
-  {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize: connection,
-    modelName: "X",
-  }
-);
+export const candidatosValidos = [
+    "candidatoA",
+    "candidatoB",
+    "candidatoC",
+    "enblanco"
+]
 
-export default XModel;
+export const errorZonaInvalida = 'zona no correspondiente';
+
+export const errorCandidatoInvalido = 'candidato no válido';
